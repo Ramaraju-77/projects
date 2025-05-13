@@ -1,3 +1,5 @@
+//HTML
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +39,7 @@
 </body>
 </html>
 
+//CSS
 
 * {
     margin: 0;
@@ -134,6 +137,8 @@
       transform: translateY(0);
     }
   }
+
+//JS
 
 const firebaseConfig = {
     apiKey: "AIzaSyCH9E2P_fmeiv_sVN8AwfpnvTRAU2aOGsE",
