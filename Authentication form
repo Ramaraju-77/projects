@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Firebase Auth & Data</title>
+  <link rel="stylesheet" href="athentucation.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Firebase Auth & Data</h2>
+
+    <input type="email" id="email" placeholder="Enter email" />
+    <input type="password" id="password" placeholder="Enter password" />
+
+    <div class="buttons">
+      <button onclick="signUp()">Sign Up</button>
+      <button onclick="signIn()">Sign In</button>
+      <button onclick="signOut()">Sign Out</button>
+    </div>
+
+    <div id="dataForm" style="display: none;">
+      <h3>Submit Your Info</h3>
+      <input type="text" id="username" placeholder="Your Name" />
+      <input type="text" id="birthday" placeholder="Your Birthday (DD-MM-YYYY)" />
+      <button onclick="saveUserData()">Save Data</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- Your JavaScript file -->
+  <script src="athentucation.js"></script>
+</body>
+</html>
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    background: linear-gradient(135deg, #74ebd5, #9face6);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+ 
+  .container {
+    background-color: #ffffff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    width: 360px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+  }
+  
+  h2, h3 {
+    color: #333333;
+    margin-bottom: 20px;
+  }
+  
+ 
+  input {
+    width: 100%;
+    padding: 14px 12px;
+    margin: 10px 0;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: 0.3s;
+  }
+  
+  input:focus {
+    border-color: #7c3aed;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+  }
+  
+
+  button {
+    background-color: #7c3aed;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    margin: 10px 5px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #5b21b6;
+    transform: translateY(-2px);
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
+
+  #dataForm {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    display: none;
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCH9E2P_fmeiv_sVN8AwfpnvTRAU2aOGsE",
+    authDomain: "authentication-cca7c.firebaseapp.com",
+    projectId: "authentication-cca7c",
+    appId: "1:766178840695:web:f7129787ba6495f1787672"
+  };
+  
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  
+ 
+  function showDataForm() {
+    document.getElementById("dataForm").style.display = "block";
+  }
+  
+
+  function signUp() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+  
+    if (!email || !password) {
+      alert("⚠️ Please enter both email and password.");
+      return;
+    }
+  
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        alert("🎉 Account created: " + userCredential.user.email);
+        showDataForm();
+      })
+      .catch(error => {
+        console.error("Sign-up error:", error);
+        alert("❌ " + (error.message || "Sign-up failed."));
+      });
+  }
+  
+ 
+  function signIn() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+  
+    if (!email || !password) {
+      alert("⚠️ Please enter both email and password.");
+      return;
+    }
+  
+    auth.signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        alert("✅ Signed in as: " + userCredential.user.email);
+        showDataForm();
+      })
+      .catch(error => {
+        console.error("Sign-in error:", error);
+        alert("❌ Sign-in error: " + (error.message || "Invalid credentials."));
+      });
+  }
+  
+
+  function signOut() {
+    auth.signOut()
+      .then(() => {
+        alert("👋 Signed out.");
+        document.getElementById("dataForm").style.display = "none";
+      })
+      .catch(error => {
+        console.error("Sign-out error:", error);
+        alert("❌ Sign-out error: " + (error.message || "Failed to sign out."));
+      });
+  }
+  
+
+  function saveUserData() {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("❗ Please sign in first.");
+      return;
+    }
+  
+    const username = document.getElementById("username").value.trim();
+    const birthday = document.getElementById("birthday").value.trim();
+  
+    if (!username || !birthday) {
+      alert("⚠️ Name and birthday are required.");
+      return;
+    }
+  
+    db.collection("users").doc(user.uid).set({
+      email: user.email,
+      name: username,
+      birthday: birthday
+    })
+    .then(() => {
+      alert("✅ Data saved successfully!");
+    })
+    .catch(error => {
+      console.error("Firestore save error:", error);
+      alert("❌ Failed to save data: " + (error.message || "Unknown error."));
+    });
+  }
+  
+
+  window.signUp = signUp;
+  window.signIn = signIn;
+  window.signOut = signOut;
+  window.saveUserData = saveUserData;
+  
+
